@@ -7,20 +7,18 @@ import cv2
 def exit_listener():
     if cv2.waitKey(1) & 0xFF == ord('q'):
         return True
-    if cv2.getWindowProperty('Frame', cv2.WND_PROP_VISIBLE) < 1:
+    if cv2.getWindowProperty(Webcam.frame_name, cv2.WND_PROP_VISIBLE) < 1:
         Canvas.close_canvas()
         return True
-    if cv2.getWindowProperty('Canvas', cv2.WND_PROP_VISIBLE) < 1:
+    if cv2.getWindowProperty(Canvas.frame_name, cv2.WND_PROP_VISIBLE) < 1:
         Webcam.close_webcam()
         return True
     return False
 
 
 if __name__ == '__main__':
-    Canvas = Canvas()
-    Webcam = Webcam()
-
-    prev_left_x, prev_left_y = None, None
+    Canvas = Canvas("Canvas")
+    Webcam = Webcam("Webcam")
 
     while True:
         Webcam.last_frame = Webcam.generate_frame()
@@ -41,17 +39,13 @@ if __name__ == '__main__':
                     h, w, c = Webcam.last_frame.shape
                     cx, cy = int(lm.x * w), int(lm.y * h)
 
-                    if hand_label == 'Left' and ID == 8:
-                        if prev_left_x is not None and prev_left_y is not None:
-                            Canvas.draw_line((prev_left_x, prev_left_y), (cx, cy), Canvas.colors["white"])
-                        prev_left_x, prev_left_y = cx, cy
-
-                    elif hand_label == 'Right' and ID == 12:
-                        Canvas.erase_area((cx, cy), 20, Canvas.colors["black"])
-        else:
-            prev_left_x, prev_left_y = None, None
+                    if hand_label == 'Left':
+                        Canvas.draw_circle((cx, cy), 5, Canvas.colors["blue"])
+                    if hand_label == 'Right':
+                        Canvas.draw_circle((cx, cy), 5, Canvas.colors["red"])
 
         Canvas.show_canvas()
         Webcam.show_webcam()
+        Canvas.erase((0, 0), (1000, 1000))
         if exit_listener():
             sys.exit(0)

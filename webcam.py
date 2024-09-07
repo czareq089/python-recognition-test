@@ -3,7 +3,8 @@ import mediapipe
 
 
 class Webcam:
-    def __init__(self):
+    def __init__(self, frame_name):
+        self.frame_name = frame_name
         self.mp_hands = mediapipe.solutions.hands
         self.hands = self.mp_hands.Hands()
         self.cap = cv2.VideoCapture(0)
@@ -14,15 +15,14 @@ class Webcam:
 
     def generate_frame(self):
         self.is_camera_on, frame = self.cap.read()
-        frame = cv2.flip(frame, 1)
-        return cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        return cv2.flip(frame, 1)
 
     def detect_hands_in_frame(self, frame):
         return self.hands.process(frame)
 
     def show_webcam(self):
-        cv2.imshow('Frame', self.last_frame)
+        cv2.imshow(self.frame_name, self.last_frame)
 
     def close_webcam(self):
         self.cap.release()
-        cv2.destroyWindow('Frame')
+        cv2.destroyWindow(self.frame_name)
