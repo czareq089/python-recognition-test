@@ -1,7 +1,7 @@
 import sys
+import cv2
 from canvas import Canvas
 from webcam import Webcam
-import cv2
 
 
 def exit_listener():
@@ -20,12 +20,14 @@ if __name__ == '__main__':
     Canvas = Canvas("Canvas")
     Webcam = Webcam("Webcam")
 
+    Canvas.add_circles(10, 100, 1000)
+
     while True:
         Webcam.last_frame = Webcam.generate_frame()
         if not Webcam.is_camera_on:
             print(
                 '\033[91m' + '\033[1m' + "\n\nKAMERKA NIE WYKRYTA!\nSprawdź czy nie jest wyłączona lub czy działa" + '\033[0m')
-            break
+            sys.exit(1)
 
         hand_detect_data = Webcam.detect_hands_in_frame(Webcam.last_frame)
 
@@ -43,7 +45,9 @@ if __name__ == '__main__':
                         Canvas.draw_circle((cx, cy), 5, Canvas.colors["blue"])
                     if hand_label == 'Right':
                         Canvas.draw_circle((cx, cy), 5, Canvas.colors["red"])
+                    Canvas.check_for_collisions((cx, cy), ID)
 
+        Canvas.draw_canvas_objects()
         Canvas.show_canvas()
         Webcam.show_webcam()
         Canvas.erase((0, 0), (1000, 1000))
