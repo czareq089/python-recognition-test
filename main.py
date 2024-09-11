@@ -4,13 +4,13 @@ from canvas import Canvas
 from webcam import Webcam
 
 
-def exit_listener():
+def exit_listener(check_for_canvas=False, check_for_webcam=False):
     if cv2.waitKey(1) & 0xFF == ord('q'):
         return True
-    if cv2.getWindowProperty(Webcam.frame_name, cv2.WND_PROP_VISIBLE) < 1:
+    if cv2.getWindowProperty(Webcam.frame_name, cv2.WND_PROP_VISIBLE) < 1 and check_for_webcam:
         Canvas.close_canvas()
         return True
-    if cv2.getWindowProperty(Canvas.frame_name, cv2.WND_PROP_VISIBLE) < 1:
+    if cv2.getWindowProperty(Canvas.frame_name, cv2.WND_PROP_VISIBLE) < 1 and check_for_canvas:
         Webcam.close_webcam()
         return True
     return False
@@ -20,7 +20,7 @@ if __name__ == '__main__':
     Canvas = Canvas("Canvas")
     Webcam = Webcam("Webcam")
 
-    Canvas.add_circles(10, 100, 1000)
+    Canvas.add_circles(10)
 
     while True:
         Webcam.last_frame = Webcam.generate_frame()
@@ -49,7 +49,7 @@ if __name__ == '__main__':
 
         Canvas.draw_canvas_objects()
         Canvas.show_canvas()
-        Webcam.show_webcam()
+        # Webcam.show_webcam()
         Canvas.erase((0, 0), (1000, 1000))
-        if exit_listener():
+        if exit_listener(True, False):
             sys.exit(0)
